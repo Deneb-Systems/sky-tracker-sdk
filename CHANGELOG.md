@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.0.0 - unreleased
+## v1.0.0 - 2026-11-03
 
 - Three profiles: `default`, `correlation` and `legacy-adaptive`. See the
   [1.0.0 release notes](docs/release-1.0.0.md) for how 0.2.x names map.
