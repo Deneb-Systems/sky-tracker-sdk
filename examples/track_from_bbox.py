@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 
-PROFILES = ("default", "correlation", "adaptive")
+PROFILES = ("default", "correlation", "legacy-adaptive")
 
 
 def parse_bbox(value: str) -> tuple[int, int, int, int]:
@@ -32,6 +32,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("video", type=Path, help="Input video file")
     parser.add_argument("--bbox", type=parse_bbox, required=True, help="Initial x,y,w,h")
     parser.add_argument("--profile", choices=PROFILES, default="default")
+    parser.add_argument(
+        "--pure",
+        action="store_true",
+        help="with --profile correlation: old-tracker alone, without NanoTrack",
+    )
     parser.add_argument("--start-seconds", type=float, default=0.0)
     parser.add_argument(
         "--csv",
@@ -69,7 +74,7 @@ def main() -> int:
             print(f"cannot read video at {args.start_seconds:.3f}s", file=sys.stderr)
             return 2
 
-        tracker = sky_tracker.Tracker(args.profile)
+        tracker = sky_tracker.Tracker(args.profile, pure=args.pure)
         tracker.lock(frame, args.bbox)
 
         csv_path = args.csv or args.video.with_name(f"{args.video.stem}_tracks.csv")

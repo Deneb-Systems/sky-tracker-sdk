@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 
-PROFILES = ("default", "correlation", "adaptive")
+PROFILES = ("default", "legacy-adaptive")  # correlation tracks a single target
 COLORS = (
     (0, 255, 255),
     (255, 180, 0),

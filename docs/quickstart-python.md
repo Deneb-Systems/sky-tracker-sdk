@@ -1,11 +1,8 @@
 # Sky Tracker SDK — Python Quickstart
 
-See the [0.2.2 release notes](release-0.2.2.md) for the latest fixes.
-
-Version 0.2.0 enables correlation and stable foreground boxes in `default`.
-For the v0.1.12 default behavior, use `sky_tracker.Tracker("legacy")`,
-`sky_tracker.MultiTracker("legacy")`, or set `TrackerConfig.profile = "legacy"`.
-Existing calls remain valid. `correlation` retains its previous automatic 128/256 search sizing.
+Version 1.0.0 has three profiles: `default`, `correlation` and `legacy-adaptive`.
+Coming from 0.2.x, see the [1.0.0 release notes](release-1.0.0.md): several
+profile names changed, and `correlation` is a different tracker.
 
 **Prerequisites**
 
@@ -87,7 +84,7 @@ dt  = 1.0 / fps
 ok, first_frame = cap.read()
 assert ok, "could not read first frame"
 
-tracker = sky_tracker.Tracker("default")   # profiles: default, correlation, adaptive, legacy
+tracker = sky_tracker.Tracker("default")   # profiles: default, correlation, legacy-adaptive
 tracker.lock(first_frame, bbox=(469, 409, 26, 38))   # (x, y, width, height)
 
 # ── Process frames ───────────────────────────────────────────────────────────
@@ -148,7 +145,7 @@ arbitrary target-order tie-break.
 
 During close interactions, translation continues while appearance learning and
 adaptive bbox geometry updates are frozen. Outside an interaction,
-`adaptive` foreground geometry and `default` candidate geometry are
+`legacy-adaptive` foreground geometry and `default` candidate geometry are
 aspect/scale constrained, clipped to the assigned ownership cell, and kept
 separate from the identity search bbox.
 
@@ -166,22 +163,29 @@ python cpp_tracker\examples\track_multi_video.py `
 
 ## 5. API reference
 
-### `sky_tracker.Tracker(profile)`
+### `sky_tracker.Tracker(profile, pure=False)`
 
 | Profile | Use case |
 |---------|----------|
 | `"default"` | Recommended speed/quality balance; uses the former Pi4-target policy |
-| `"correlation"` | Correlation-led identity lock |
-| `"adaptive"` | Correlation-led identity with gated foreground bbox fitting |
+| `"correlation"` | Correlation-filter tracker (old-tracker) plus NanoTrack, arbitrated; single target, `Tracker` only |
+| `"legacy-adaptive"` | Template tracker with correlation assist (strict checks, camera-motion compensation) and scheduled foreground box fitting |
 
-Legacy names such as `pi4-target`, `adaptive-target`, `hybrid-target`, and
-`sota-target` are still accepted as deprecated aliases.
+`pure=True` (with `"correlation"` only) runs old-tracker alone, without
+NanoTrack: it needs no OpenCV `dnn` and no model files, and its `confidence` is
+1 while tracking and 0 once it has lost the target. Without `pure`,
+`"correlation"` raises when the module was built without NanoTrack or cannot
+find its models; `sky_tracker.has_nanotrack` tells you which builds have it
+(the Linux and macOS wheels do). The `default` aliases `pi4-target`, `raspi4-target` and
+`pi-target` are still accepted. Accuracy and speed per profile are in the
+[1.0.0 benchmarks](benchmarks.md).
 
 You can also pass a `TrackerConfig` object:
 
 ```python
 cfg = sky_tracker.TrackerConfig()
-cfg.profile = "adaptive"
+cfg.profile = "correlation"
+cfg.pure = True
 tracker = sky_tracker.Tracker(cfg)
 ```
 
@@ -296,7 +300,3 @@ Share your CSV and any annotated frames with us. The `reason` field in each row 
 - On Windows, call `os.add_dll_directory(MODULE_DIR)` before `import sky_tracker` so the loader finds OpenCV DLLs next to the module.
 - `annotate()` returns a full-resolution copy of the frame — avoid calling it on every frame in throughput-critical paths.
 - The licence key is checked when `Tracker()` is constructed. If the key expires mid-session the current tracker instance keeps running; the next `Tracker()` construction will fail.
-
-The optional `correlation-quality` and `adaptive-quality` profiles enable the
-separate quality engine. Existing profiles keep their current behavior. See
-[0.2.0 release notes](release-0.2.0.md) for profile details.

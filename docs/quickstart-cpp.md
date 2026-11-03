@@ -7,12 +7,13 @@ SDKs are bindings over this same code.
 
 - A C++17 compiler
 - CMake 3.16 or later
-- OpenCV 4.x with the `core`, `imgproc` and `video` modules
+- OpenCV 4.x with the `core`, `imgproc` and `video` modules (4.7+ with `dnn`
+  as well for the `correlation` profile with NanoTrack)
 - Your evaluation licence key
 
 ---
 
-The SDK version is 0.2.2. Existing profiles retain the tracking policy used by the CLI and Python SDK.
+The SDK version is 1.0.0. Every profile tracks exactly as it does in the CLI and the Python SDK.
 
 ## 1. What you receive
 
@@ -20,6 +21,8 @@ The SDK version is 0.2.2. Existing profiles retain the tracking policy used by t
 include/sky_tracker/sdk.hpp        the entire public API
 lib/libsky_tracker.a               the tracker
 lib/cmake/sky_tracker/             CMake package config
+share/sky_tracker/models/nanotrack NanoTrack models for the correlation profile
+                                   (only in builds with OpenCV dnn)
 ```
 
 `sdk.hpp` is the only header you include. It carries no OpenCV types, so your
@@ -151,20 +154,57 @@ Pass a profile name to the constructor:
 
 | Profile | Use |
 |---|---|
-| `default` | Balanced starting point, grayscale-only, constrained-CPU policy |
-| `correlation` | Correlation-led tracking of a selected object |
-| `adaptive` | Correlation identity plus scheduled foreground box fitting |
-| `legacy` | The v0.1.12 default policy |
-| `correlation-quality` | Opt-in normalized correlation, appearance verification, fixed box size |
-| `adaptive-quality` | Quality engine with adaptive foreground geometry |
-| `fast-sky` | Fast targets against open sky |
-| `birds` | Small erratic targets |
-| `close-pass` | Targets that pass close to the camera and change scale sharply |
-| `missile` | Small, fast, near-constant-heading targets |
-| `scale-target` | Targets whose apparent size changes substantially |
+| `default` | Balanced starting point, grayscale-only, constrained-CPU policy; several targets |
+| `correlation` | Correlation-filter tracker (old-tracker) plus the NanoTrack neural tracker, arbitrated; single target only |
+| `legacy-adaptive` | Template tracker with correlation assist (strict checks, camera-motion compensation) and scheduled foreground box fitting; several targets |
 
 `availableProfiles()` returns this list at runtime. Which one wins depends on
-your camera and target mix — evaluate against your own footage.
+your camera and target mix: see the [1.0.0 benchmarks](benchmarks.md), then
+evaluate against your own footage.
+
+### The correlation profile
+
+`correlation` runs old-tracker, a correlation-filter tracker, and NanoTrack on
+every frame. Where they agree it reports old-tracker's box; where they disagree
+it picks one from appearance, contrast, motion and both trackers' scores, and
+restarts the other tracker once one has clearly won for ten frames while the
+two are on different objects. It runs both trackers, so it costs more CPU than
+either alone.
+
+```cpp
+sky_tracker::sdk::Tracker tracker("correlation");        // old-tracker + NanoTrack
+sky_tracker::sdk::Tracker pure("correlation", true);     // old-tracker alone
+```
+
+Pass `pure = true` for old-tracker alone: it needs no `dnn` and no model files,
+reports `r.confidence` `1` while tracking and `0` when it has lost the target,
+and throws `Error` from `lock()` if the box sits so close to the frame edge that
+its tracking rectangle does not fit.
+
+NanoTrack needs a library built against OpenCV 4.7+ with the `dnn` module, in
+which case `find_package(sky_tracker)` also requires OpenCV's `dnn`; without it
+`Tracker("correlation")` throws `Error` (pure still works). It loads two model
+files from the first of:
+
+1. `$SKY_TRACKER_NANOTRACK_MODELS`
+2. `sky_tracker_models/nanotrack/` beside your executable
+3. `share/sky_tracker/models/nanotrack/` relative to your executable's directory
+4. the install prefix the library was configured with
+
+Ship `share/sky_tracker/models/nanotrack/` (including its `LICENSE`, Apache 2.0)
+with your application and point one of these at it. The `Tracker` constructor
+throws `Error`, listing every directory it tried, when they are missing.
+
+`r.confidence` says how the frame was resolved: `1` both trackers agree,
+`0.75` a clear arbitration, `0.5` a close one, or NanoTrack alone while it still
+matches the target's appearance. Below `0.5` (NanoTrack alone, appearance not
+supported) the result is reported `Lost`. A controller that needs fewer wrong
+frames can treat anything under `0.75` as a hold.
+
+The reported box is steadied: it moves to the other tracker's box only after
+that tracker has won three frames in a row (at once when the trackers are on
+different objects) and its centre and size are smoothed, so a gimbal loop
+does not see the two trackers' slightly different boxes as motion.
 
 ---
 

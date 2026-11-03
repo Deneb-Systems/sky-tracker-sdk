@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 
-PROFILES = ("default", "correlation", "adaptive")
+PROFILES = ("default", "correlation", "legacy-adaptive")
 ZOOM_HEIGHT = 160
 ZOOM_PADDING = 10
 
@@ -17,6 +17,11 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("video", type=Path, help="Input video file")
     parser.add_argument("--profile", choices=PROFILES, default="default")
+    parser.add_argument(
+        "--pure",
+        action="store_true",
+        help="with --profile correlation: old-tracker alone, without NanoTrack",
+    )
     parser.add_argument(
         "--start-seconds",
         type=float,
@@ -92,7 +97,7 @@ def main() -> int:
             print("target selection cancelled", file=sys.stderr)
             return 2
 
-        tracker = sky_tracker.Tracker(args.profile)
+        tracker = sky_tracker.Tracker(args.profile, pure=args.pure)
         tracker.lock(frame, bbox)
 
         output = args.output or args.video.with_name(f"{args.video.stem}_tracked.mp4")

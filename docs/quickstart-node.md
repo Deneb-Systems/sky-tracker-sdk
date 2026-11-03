@@ -1,9 +1,8 @@
 # Sky Tracker SDK — Node.js Quickstart
 
-Use the 0.2.2 CLI runtime with this SDK. Version 0.2.0 changed `default` to use
-correlation and stable foreground boxes. Set `profile: "legacy"` in `trackVideo()`
-for the v0.1.12 default behavior. The old runtime does not recognize `legacy`.
-`correlation` retains its previous automatic 128/256 search sizing.
+Use the 1.0.0 CLI runtime with this SDK: 0.2.x runtimes do not know
+`legacy-adaptive` or `pure`. Coming from 0.2.x, see the
+[1.0.0 release notes](release-1.0.0.md) for the profile changes.
 
 **Prerequisites**
 
@@ -157,7 +156,8 @@ Observation-derived score and geometry-confidence fields are `0` on these rows.
 | `maxFrames` | unlimited | Stop after N frames |
 | `csv` | temp file | Telemetry output path |
 | `output` | — | Annotated MP4 output path |
-| `profile` | `"default"` | Tracking profile (`default`, `correlation`, `adaptive`, or `legacy`) |
+| `profile` | `"default"` | Tracking profile (`default`, `correlation`, or `legacy-adaptive`) |
+| `pure` | `false` | With `correlation`: old-tracker alone, without NanoTrack |
 | `licenseKey` | env var | Per-run licence key override |
 
 ---
@@ -174,7 +174,3 @@ Share `results.csv` and (optionally) `annotated.mp4` with us. The CSV contains t
 - The annotated video output (`--output`) encodes with `mp4v` codec — some players prefer H.264. Open in VLC or ffmpeg if your default player cannot decode it.
 - Camera inputs work but live-frame latency is higher than file sources on Windows due to VideoCapture buffering.
 - The CLI-backed Node SDK is not suitable for <5 ms per-frame integrations. A future native N-API binding will address that.
-
-The optional `correlation-quality` and `adaptive-quality` profiles enable the
-separate quality engine. Existing profiles keep their current behavior. See
-[0.2.0 release notes](release-0.2.0.md) for profile details.

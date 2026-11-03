@@ -4,6 +4,9 @@ Sky Tracker is a CPU-friendly SDK for following small, fast-moving targets in
 video. The caller selects each target with an initial bounding box; Sky Tracker
 then maintains its position, identity, motion state, and visible box over time.
 
+Current version: 1.0.0. Coming from 0.2.x, read the
+[1.0.0 release notes](docs/release-1.0.0.md) first: profile names changed.
+
 It is a selected-target tracker, not a general object detector. Use your own
 detector, telemetry, or an interactive ROI to provide the initial
 `(x, y, width, height)` box.
@@ -111,18 +114,35 @@ tracks to the same observation. The result exposes this state through
 
 ## Profiles
 
-| Profile       | Choose it when                                                                   |
-| ------------- | -------------------------------------------------------------------------------- |
-| `default`     | You want the recommended speed/quality balance and adaptive visible bbox sizing. |
-| `correlation` | You prefer a correlation-led identity lock with conservative box geometry.       |
-| `adaptive`    | You want correlation-led identity plus gated foreground bbox fitting.            |
-| `legacy`      | You want to retain the pre-0.2.0 default tracking policy (v0.1.12 baseline).     |
-| `correlation-quality` | You want opt-in normalized correlation, appearance checks, and fixed box sizing. |
-| `adaptive-quality`    | You want the quality engine with adaptive foreground geometry.           |
+| Profile | What it is | Targets |
+| ------- | ---------- | ------- |
+| `default` | Grey template tracker tuned for constrained CPUs. The recommended starting point. | One or several |
+| `correlation` | A correlation-filter tracker (old-tracker) and NanoTrack, a 1.8 MB neural tracker, run on every frame; an arbiter reports one box. | One (`Tracker` only) |
+| `legacy-adaptive` | Template tracker with correlation assist (strict checks, camera-motion compensation) and scheduled foreground box fitting. | One or several |
 
-Start with `default`. Compare profiles on your own labelled footage before
-changing a production configuration. When upgrading from v0.1.12, use `legacy`
-to retain original behavior.
+```python
+tracker = sky_tracker.Tracker("correlation")             # old-tracker + NanoTrack
+tracker = sky_tracker.Tracker("correlation", pure=True)  # old-tracker alone
+```
+
+The Linux (x86_64 and aarch64) and macOS wheels and the Jetson C++ package
+include NanoTrack; `sky_tracker.has_nanotrack` says whether a build has it.
+Without it, `Tracker("correlation")` raises and `pure=True` still works. On a
+Raspberry Pi or Jetson, NanoTrack is the slow part: measure `correlation` on the
+device, and fall back to `pure` or `default` if it cannot keep up.
+
+Which profile wins depends on the footage:
+
+| Centre within 20 px of the label | 224 public dataset clips | 18 field clips |
+| -------------------------------- | ------------------------ | -------------- |
+| `default`                        | 0.770                    | **0.692**      |
+| `correlation`                    | **0.903**                | 0.653          |
+| `correlation`, pure              | 0.851                    | 0.602          |
+| `legacy-adaptive`                | 0.831                    | 0.626          |
+
+Start with `default`, and compare profiles on labelled frames of your own
+footage before changing a production configuration. Full results, metric
+definitions and speed are in [benchmarks](docs/benchmarks.md).
 
 ## Python examples
 
@@ -133,6 +153,8 @@ MP4 with a zoom inset:
 
 ```bash
 python examples/track_video.py video.mp4 --start-seconds 10 --profile default
+python examples/track_video.py video.mp4 --profile correlation          # old-tracker + NanoTrack
+python examples/track_video.py video.mp4 --profile correlation --pure   # old-tracker alone
 ```
 
 Source: [`examples/track_video.py`](examples/track_video.py)
@@ -140,7 +162,8 @@ Source: [`examples/track_video.py`](examples/track_video.py)
 ### Interactive multiple targets
 
 Select targets in stable ID order. After selecting at least two boxes, press
-Esc on the next selection dialog to start tracking:
+Esc on the next selection dialog to start tracking. `MultiTracker` accepts
+`default` and `legacy-adaptive`; `correlation` tracks one target:
 
 ```bash
 python examples/track_multi_video.py video.mp4 --profile default
@@ -189,17 +212,19 @@ Every example supports `--help`.
 
 ## Platforms
 
-| Platform               | Status   |
-| ---------------------- | -------- |
-| Windows x64            | Verified |
-| Linux x86_64           | Verified |
-| Raspberry Pi 4 (ARM64) | Verified |
-| macOS                  | Verified |
+| Platform               | Status                                          |
+| ---------------------- | ----------------------------------------------- |
+| macOS (Apple silicon)  | 1.0.0 built, tested and benchmarked             |
+| Windows x64            | Verified for 0.2.2; 1.0.0 not yet validated     |
+| Linux x86_64           | Verified for 0.2.2; 1.0.0 not yet validated     |
+| Raspberry Pi 4 (ARM64) | Verified for 0.2.2; 1.0.0 aarch64 wheel built and checked in Docker, not yet on a Pi |
+| Jetson (JetPack 4.6)   | 1.0.0 C++ package built and tested in Docker, not yet on a Jetson |
 
 ## Documentation
 
 - [Python quickstart](docs/quickstart-python.md)
 - [Node.js quickstart](docs/quickstart-node.md)
 - [C++ quickstart](docs/quickstart-cpp.md)
+- [Benchmarks](docs/benchmarks.md)
+- [1.0.0 release notes](docs/release-1.0.0.md)
 - [0.2.2 release notes](docs/release-0.2.2.md)
-- [0.2.0 migration notes](docs/release-0.2.0.md)

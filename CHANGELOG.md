@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.0.0 - unreleased
+
+- Three profiles: `default`, `correlation` and `legacy-adaptive`. See the
+  [1.0.0 release notes](docs/release-1.0.0.md) for how 0.2.x names map.
+- New `correlation`: a correlation-filter tracker (old-tracker) arbitrated with
+  NanoTrack, a 1.8 MB neural tracker; one target. `pure` runs old-tracker alone.
+- `default` is the grey template tracker that 0.2.x called `legacy`.
+- `legacy-adaptive` is the tracker that 0.2.x called `adaptive-quality`.
+- 0.2.x `legacy`, `adaptive`, `correlation-quality`, `adaptive-quality`, `fast-sky`,
+  `birds`, `close-pass`, `missile`, `scale-target` and `mosse` are refused.
+- CLI: complete `--help`, `--pure`, arbiter tuning, and a motion-aware layer for
+  moving cameras (`--old-tracker-motion`, with `--pure`).
+- Published [benchmarks](docs/benchmarks.md): accuracy on 224 public dataset clips
+  and 18 field clips, and speed per profile.
+
 ## v0.2.2 - 2026-09-12
 
 - Fix Python wheel builds for Linux x86_64 and ARM64 against pinned OpenCV 4.12.0.
