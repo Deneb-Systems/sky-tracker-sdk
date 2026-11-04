@@ -40,6 +40,16 @@ The Node.js wrapper is also available:
 npm install @sky-tracker/node
 ```
 
+C++17: download the package for your platform from the
+[latest release](https://github.com/Deneb-Systems/sky-tracker-sdk/releases/latest):
+[Windows x64](https://github.com/Deneb-Systems/sky-tracker-sdk/releases/latest/download/sky-tracker-cpp-windows-x64.zip),
+[macOS (Apple silicon)](https://github.com/Deneb-Systems/sky-tracker-sdk/releases/latest/download/sky-tracker-cpp-macos-arm64.tar.gz),
+[Linux x86_64](https://github.com/Deneb-Systems/sky-tracker-sdk/releases/latest/download/sky-tracker-cpp-linux-x86_64.tar.gz),
+[Linux ARM64](https://github.com/Deneb-Systems/sky-tracker-sdk/releases/latest/download/sky-tracker-cpp-linux-arm64.tar.gz)
+(Jetson and Raspberry Pi too). Each has `sdk.hpp`, a shared library with OpenCV
+built in, a CMake package and two examples, and needs no OpenCV on your machine:
+see the [C++ quickstart](docs/quickstart-cpp.md).
+
 ## Licence setup
 
 A valid licence is required when a tracker is created. Buy one at
@@ -139,7 +149,7 @@ tracker = sky_tracker.Tracker("correlation", ml=True)               # plus NanoT
 tracker = sky_tracker.Tracker("correlation", ml=True, ml_every=3)   # NanoTrack every 3rd agreeing frame
 ```
 
-The Linux (x86_64 and aarch64) and macOS wheels and the Jetson C++ package
+The Linux (x86_64 and aarch64) and macOS wheels and the C++ packages
 include NanoTrack; `sky_tracker.has_nanotrack` says whether a build has it.
 Without it, `ml=True` raises and plain `correlation` still works. On a
 Raspberry Pi or Jetson, NanoTrack is the slow part: measure `ml=True` on the
@@ -234,10 +244,10 @@ Every example supports `--help`.
 | Platform               | Status                                          |
 | ---------------------- | ----------------------------------------------- |
 | macOS (Apple silicon)  | 1.1.0 built, tested and benchmarked             |
-| Windows x64            | Verified for 0.2.2; 1.x not yet validated       |
-| Linux x86_64           | Verified for 0.2.2; 1.x not yet validated       |
-| Raspberry Pi 4 (ARM64) | Verified for 0.2.2; 1.0.0 aarch64 wheel built and checked in Docker, not yet on a Pi |
-| Jetson (JetPack 4.6)   | 1.0.0 C++ package built and tested in Docker, not yet on a Jetson |
+| Windows x64            | Verified for 0.2.2; 1.1.0 C++ package built and tested on CI (Visual Studio 2022) |
+| Linux x86_64           | Verified for 0.2.2; 1.1.0 C++ package built and tested in Docker (Ubuntu 20.04) |
+| Raspberry Pi 4 (ARM64) | Verified for 0.2.2; 1.1.0 ARM64 wheel and C++ package built and tested in Docker, not yet on a Pi |
+| Jetson (JetPack 4.6)   | 1.1.0 ARM64 C++ package built and tested in Docker (Ubuntu 18.04), not yet on a Jetson |
 
 ## Documentation
 

@@ -5,30 +5,41 @@ SDKs are bindings over this same code.
 
 **Prerequisites**
 
-- A C++17 compiler
-- CMake 3.16 or later
-- OpenCV 4.x with the `core`, `imgproc` and `video` modules (4.7+ with `dnn`
-  as well for the `correlation` profile with NanoTrack)
+- A C++17 compiler and CMake 3.16 or later
 - A licence key (see step 2)
+
+You do not need OpenCV: the library carries its own.
 
 ---
 
 The SDK version is 1.1.0. Every profile tracks exactly as it does in the CLI and the Python SDK.
 
-## 1. What you receive
+## 1. Download the package
+
+Pick yours from the [latest release](https://github.com/Deneb-Systems/sky-tracker-sdk/releases/latest):
+
+| Platform | Package | Needs |
+|---|---|---|
+| Windows x64 | [`sky-tracker-cpp-windows-x64.zip`](https://github.com/Deneb-Systems/sky-tracker-sdk/releases/latest/download/sky-tracker-cpp-windows-x64.zip) | Visual Studio 2019 or 2022 |
+| macOS, Apple silicon | [`sky-tracker-cpp-macos-arm64.tar.gz`](https://github.com/Deneb-Systems/sky-tracker-sdk/releases/latest/download/sky-tracker-cpp-macos-arm64.tar.gz) | macOS 13 or later |
+| Linux x86_64 | [`sky-tracker-cpp-linux-x86_64.tar.gz`](https://github.com/Deneb-Systems/sky-tracker-sdk/releases/latest/download/sky-tracker-cpp-linux-x86_64.tar.gz) | glibc 2.31+ (Ubuntu 20.04, Debian 11, RHEL 9 or later) |
+| Linux ARM64 | [`sky-tracker-cpp-linux-arm64.tar.gz`](https://github.com/Deneb-Systems/sky-tracker-sdk/releases/latest/download/sky-tracker-cpp-linux-arm64.tar.gz) | glibc 2.27+ (Ubuntu 18.04 or later, Jetson JetPack 4.6 or later, Raspberry Pi OS 64-bit) |
 
 ```
-include/sky_tracker/sdk.hpp        the entire public API
-lib/libsky_tracker.a               the tracker
-lib/cmake/sky_tracker/             CMake package config
-share/sky_tracker/models/nanotrack NanoTrack models for the correlation profile
-                                   (only in builds with OpenCV dnn)
+include/sky_tracker/sdk.hpp           the entire public API
+lib/libsky_tracker.so.1               the library (macOS: lib/libsky_tracker.1.dylib,
+                                      Windows: bin/sky_tracker.dll, lib/sky_tracker.lib,
+                                      and sky_trackerd.dll/.lib for Debug builds)
+lib/cmake/sky_tracker/                CMake package config
+share/sky_tracker/models/nanotrack/   NanoTrack models for the correlation profile with ml
+examples/cpp/                         two compiling examples
 ```
 
-`sdk.hpp` is the only header you include. It carries no OpenCV types, so your
-application does not have to match the OpenCV build we compiled against at the
-API level — though a static library still links against a specific OpenCV, so
-tell us which one you use and we will build to match.
+The library is a shared library with OpenCV 4.12 linked inside, and it exports
+only the `sky_tracker::sdk` API. `sdk.hpp` carries no OpenCV types. So your
+application needs no OpenCV, and if it uses one of its own, any version, the two
+do not clash. The package's `README.md` covers building the examples and shipping
+the library with your program.
 
 ---
 
@@ -37,7 +48,8 @@ tell us which one you use and we will build to match.
 Buy a licence at [sky-tracker.deneb-systems.com](https://sky-tracker.deneb-systems.com/#pricing).
 The key arrives by email right after payment, as text and as a `sky_tracker.lic`
 file, and works on every device you run the SDK on: there is no machine ID to
-send. To try the tracker first, use the free demo app from the same page.
+send. Students get a [free one-year licence](https://sky-tracker.deneb-systems.com/student/).
+To try the tracker first, use the free demo app from the website.
 
 `sky_tracker::sdk::machineId()` still prints this machine's ID, for keys we
 issued to a single unit before 1.0.
@@ -177,18 +189,19 @@ options.ml = true;                                          // plus NanoTrack, e
 sky_tracker::sdk::Tracker checked("correlation", options);
 ```
 
-NanoTrack needs a library built against OpenCV 4.7+ with the `dnn` module, in
-which case `find_package(sky_tracker)` also requires OpenCV's `dnn`; without it
-`ml` throws `Error` (plain `correlation` still works). It loads two model
-files from the first of:
+Every package includes NanoTrack. (A library you build yourself needs OpenCV
+4.7+ with the `dnn` module for it; without it `ml` throws `Error` and plain
+`correlation` still works.) It loads two model files from the first of:
 
 1. `$SKY_TRACKER_NANOTRACK_MODELS`
-2. `sky_tracker_models/nanotrack/` beside your executable
-3. `share/sky_tracker/models/nanotrack/` relative to your executable's directory
+2. `sky_tracker_models/nanotrack/` beside the library
+3. `share/sky_tracker/models/nanotrack/` in the parent of the library's folder,
+   which is where the package keeps them
 4. the install prefix the library was configured with
 
 Ship `share/sky_tracker/models/nanotrack/` (including its `LICENSE`, Apache 2.0)
-with your application and point one of these at it. The `Tracker` constructor
+with your application, in the same place relative to the library, or point
+`SKY_TRACKER_NANOTRACK_MODELS` at it. The `Tracker` constructor
 throws `Error`, listing every directory it tried, when they are missing.
 
 `r.confidence` says how the frame was resolved: `1` both trackers agree,
