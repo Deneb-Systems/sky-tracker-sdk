@@ -13,7 +13,7 @@ SDKs are bindings over this same code.
 
 ---
 
-The SDK version is 1.0.0. Every profile tracks exactly as it does in the CLI and the Python SDK.
+The SDK version is 1.1.0. Every profile tracks exactly as it does in the CLI and the Python SDK.
 
 ## 1. What you receive
 
@@ -155,35 +155,41 @@ Pass a profile name to the constructor:
 | Profile | Use |
 |---|---|
 | `default` | Balanced starting point, grayscale-only, constrained-CPU policy; several targets |
-| `correlation` | Correlation-filter tracker (old-tracker) plus the NanoTrack neural tracker, arbitrated; single target only |
+| `correlation` | An improved correlation-filter tracker, no neural network; with `ml`, plus the NanoTrack neural tracker, arbitrated; single target only |
 | `legacy-adaptive` | Template tracker with correlation assist (strict checks, camera-motion compensation) and scheduled foreground box fitting; several targets |
 
 `availableProfiles()` returns this list at runtime. Which one wins depends on
-your camera and target mix: see the [1.0.0 benchmarks](benchmarks.md), then
+your camera and target mix: see the [benchmarks](benchmarks.md), then
 evaluate against your own footage.
 
 ### The correlation profile
 
-`correlation` runs old-tracker, a correlation-filter tracker, and NanoTrack on
-every frame. Where they agree it reports old-tracker's box; where they disagree
-it picks one from appearance, contrast, motion and both trackers' scores, and
-restarts the other tracker once one has clearly won for ten frames while the
-two are on different objects. It runs both trackers, so it costs more CPU than
-either alone.
+`correlation` runs an improved correlation-filter tracker: no neural network
+and no model files. It reports `r.confidence` `1` while tracking and `0` when
+it has lost the target, and throws `Error` from `lock()` if the box sits so
+close to the frame edge that its tracking rectangle does not fit.
+
+With `TrackerOptions::ml` it also runs NanoTrack, a small neural tracker.
+Where the two agree it reports the correlation tracker's box; where they
+disagree it picks one from appearance, contrast, motion and both trackers'
+scores, and restarts the other tracker once one has clearly won for ten frames
+while the two are on different objects. By default NanoTrack runs on every
+frame, exactly as 1.0.0's `correlation` did. `mlEvery = N` runs it on every Nth
+frame while the two agree (and on every frame while they disagree or the target
+is lost): about half the cost at N = 3, but on fast footage the box can jump
+between checks.
 
 ```cpp
-sky_tracker::sdk::Tracker tracker("correlation");        // old-tracker + NanoTrack
-sky_tracker::sdk::Tracker pure("correlation", true);     // old-tracker alone
-```
+sky_tracker::sdk::Tracker tracker("correlation");          // the correlation tracker alone
 
-Pass `pure = true` for old-tracker alone: it needs no `dnn` and no model files,
-reports `r.confidence` `1` while tracking and `0` when it has lost the target,
-and throws `Error` from `lock()` if the box sits so close to the frame edge that
-its tracking rectangle does not fit.
+sky_tracker::sdk::TrackerOptions options;
+options.ml = true;                                          // plus NanoTrack, every frame
+sky_tracker::sdk::Tracker checked("correlation", options);
+```
 
 NanoTrack needs a library built against OpenCV 4.7+ with the `dnn` module, in
 which case `find_package(sky_tracker)` also requires OpenCV's `dnn`; without it
-`Tracker("correlation")` throws `Error` (pure still works). It loads two model
+`ml` throws `Error` (plain `correlation` still works). It loads two model
 files from the first of:
 
 1. `$SKY_TRACKER_NANOTRACK_MODELS`

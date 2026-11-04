@@ -1,8 +1,9 @@
 # Sky Tracker SDK — Node.js Quickstart
 
-Use the 1.0.0 CLI runtime with this SDK: 0.2.x runtimes do not know
-`legacy-adaptive` or `pure`. Coming from 0.2.x, see the
-[1.0.0 release notes](release-1.0.0.md) for the profile changes.
+Use the 1.1.0 CLI runtime with this SDK: older runtimes do not know `ml`, and
+0.2.x ones not `legacy-adaptive` either. See the
+[1.1.0 release notes](release-1.1.0.md) for what changed since 1.0.0, and the
+[1.0.0 release notes](release-1.0.0.md) when coming from 0.2.x.
 
 **Prerequisites**
 
@@ -157,7 +158,8 @@ Observation-derived score and geometry-confidence fields are `0` on these rows.
 | `csv` | temp file | Telemetry output path |
 | `output` | — | Annotated MP4 output path |
 | `profile` | `"default"` | Tracking profile (`default`, `correlation`, or `legacy-adaptive`) |
-| `pure` | `false` | With `correlation`: old-tracker alone, without NanoTrack |
+| `ml` | `false` | With `correlation`: add NanoTrack, a small neural tracker, arbitrated |
+| `mlEvery` | `1` | With `ml`: run NanoTrack every Nth frame while the two trackers agree; higher is faster but the box can jump |
 | `licenseKey` | env var | Per-run licence key override |
 
 ---

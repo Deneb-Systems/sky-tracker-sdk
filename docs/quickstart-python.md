@@ -1,8 +1,9 @@
 # Sky Tracker SDK — Python Quickstart
 
-Version 1.0.0 has three profiles: `default`, `correlation` and `legacy-adaptive`.
-Coming from 0.2.x, see the [1.0.0 release notes](release-1.0.0.md): several
-profile names changed, and `correlation` is a different tracker.
+Version 1.1.0 has three profiles: `default`, `correlation` and `legacy-adaptive`.
+Coming from 1.0.0, see the [1.1.0 release notes](release-1.1.0.md): `pure` is
+gone and NanoTrack moved behind `ml=True`. Coming from 0.2.x, see also the
+[1.0.0 release notes](release-1.0.0.md).
 
 **Prerequisites**
 
@@ -163,29 +164,34 @@ python cpp_tracker\examples\track_multi_video.py `
 
 ## 5. API reference
 
-### `sky_tracker.Tracker(profile, pure=False)`
+### `sky_tracker.Tracker(profile, *, ml=False, ml_every=1)`
 
 | Profile | Use case |
 |---------|----------|
 | `"default"` | Recommended speed/quality balance; uses the former Pi4-target policy |
-| `"correlation"` | Correlation-filter tracker (old-tracker) plus NanoTrack, arbitrated; single target, `Tracker` only |
+| `"correlation"` | An improved correlation-filter tracker, no neural network; single target, `Tracker` only |
 | `"legacy-adaptive"` | Template tracker with correlation assist (strict checks, camera-motion compensation) and scheduled foreground box fitting |
 
-`pure=True` (with `"correlation"` only) runs old-tracker alone, without
-NanoTrack: it needs no OpenCV `dnn` and no model files, and its `confidence` is
-1 while tracking and 0 once it has lost the target. Without `pure`,
-`"correlation"` raises when the module was built without NanoTrack or cannot
-find its models; `sky_tracker.has_nanotrack` tells you which builds have it
-(the Linux and macOS wheels do). The `default` aliases `pi4-target`, `raspi4-target` and
+`"correlation"` needs no OpenCV `dnn` and no model files; its `confidence` is
+1 while tracking and 0 once it has lost the target. `ml=True` (with
+`"correlation"` only) adds NanoTrack, a small neural tracker, and arbitrates
+between the two, on every frame by default (exactly 1.0.0's `correlation`).
+`ml_every=N` runs NanoTrack on every Nth frame while the two agree, and on
+every frame while they disagree or the target is lost: about half the cost at
+N = 3, but on fast footage the box can jump between checks. With
+`ml=True` the constructor raises when the module was built without NanoTrack
+or cannot find its models; `sky_tracker.has_nanotrack` tells you which builds
+have it (the Linux and macOS wheels do). The `default` aliases `pi4-target`, `raspi4-target` and
 `pi-target` are still accepted. Accuracy and speed per profile are in the
-[1.0.0 benchmarks](benchmarks.md).
+[benchmarks](benchmarks.md).
 
 You can also pass a `TrackerConfig` object:
 
 ```python
 cfg = sky_tracker.TrackerConfig()
 cfg.profile = "correlation"
-cfg.pure = True
+cfg.ml = True
+cfg.ml_every = 1
 tracker = sky_tracker.Tracker(cfg)
 ```
 

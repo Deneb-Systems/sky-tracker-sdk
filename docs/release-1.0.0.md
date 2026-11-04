@@ -9,7 +9,7 @@ tracker. Several 0.2.x profile names change meaning or are refused, so read
 | Profile | What it is | Targets |
 |---|---|---|
 | `default` | Grey template tracker tuned for constrained CPUs. The recommended starting point. | One or several |
-| `correlation` | New. Old-tracker, a correlation-filter tracker, and NanoTrack, a 1.8 MB neural tracker, run on every frame; an arbiter reports one box. `pure` runs old-tracker alone. | One |
+| `correlation` | New. An improved correlation-filter tracker and NanoTrack, a 1.8 MB neural tracker, run on every frame; an arbiter reports one box. `pure` runs the correlation tracker alone. | One |
 | `legacy-adaptive` | Template tracker with correlation assist (strict response checks and camera-motion compensation) and scheduled foreground box fitting. | One or several |
 
 `pi4-target`, `raspi4-target` and `pi-target` remain aliases for `default`.
@@ -21,8 +21,8 @@ On our 18 field clips, `default` leads with 0.692 against 0.653.
 
 ## The correlation profile
 
-`correlation` runs old-tracker and NanoTrack on every frame. Where they agree it
-reports old-tracker's box; where they disagree it picks one from appearance,
+`correlation` runs the correlation tracker and NanoTrack on every frame. Where they agree it
+reports the correlation tracker's box; where they disagree it picks one from appearance,
 contrast, motion and both trackers' scores. Once one tracker has clearly won for
 ten frames while the two are on different objects, it restarts the other. The
 reported box is steadied, so it does not jump between the two trackers' boxes.
@@ -32,18 +32,18 @@ reported box is steadied, so it does not jump between the two trackers' boxes.
   model files (Apache 2.0, shipped with the SDK). Where the build lacks `dnn` or
   cannot find the models, `Tracker("correlation")` raises an error that says so.
 - `pure` (CLI `--pure`, Python `pure=True`, C++ `Tracker("correlation", true)`,
-  Node `pure: true`) runs old-tracker alone. It needs neither `dnn` nor the
+  Node `pure: true`) runs the correlation tracker alone. It needs neither `dnn` nor the
   models. Its confidence is 1 while tracking and 0 once lost. It refuses a start
   box so close to the frame edge that its tracking rectangle does not fit.
-- CLI only: `--profile correlation --pure --old-tracker-motion` adds a layer for
-  moving cameras. It rejects a box that moves with the background, coasts on the
+- CLI only: with `--profile correlation --pure`, an optional layer for moving
+  cameras (listed in `--help`). It rejects a box that moves with the background, coasts on the
   prediction and re-locks on a moving blob.
 
 ## Command line
 
 - `--help` now lists the input, target and output options.
 - New options: `--pure`, the `--arbiter-*` options for `correlation`, and the
-  `--old-tracker-motion*` options. `--help` lists them with their defaults.
+  motion-layer options. `--help` lists them with their defaults.
 
 ## Upgrading from 0.2.x
 
