@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.1.0 - 2026-11-04
+
+- `correlation` is now the improved correlation-filter tracker alone (1.0.0's
+  `pure`), with no neural network. `ml` (CLI `--ml`, Python `ml=True`, C++
+  `TrackerOptions::ml`, Node `ml: true`) adds NanoTrack and reproduces 1.0.0's
+  `correlation`. See the [1.1.0 release notes](docs/release-1.1.0.md).
+- `ml_every` (CLI `--ml-every`, Node and C++ `mlEvery`) runs NanoTrack on every
+  Nth frame while the two trackers agree. The default is every frame.
+- `pure` is gone; `--pure` is refused with a pointer to the new setting.
+- CLI: the correlation tracker's options are `--correlation-*` (were
+  `--old-tracker-*`). The motion layer for moving cameras (`--correlation-motion`)
+  makes fewer wrong claims, treats a box held against the frame border as lost,
+  and can estimate camera motion around the target only. `--output`, `--csv` and
+  `--json` refuse to overwrite the source video.
+- Desktop demo: redesigned, smoother, skips black openings, and saves on macOS.
+
 ## v1.0.0 - 2026-11-03
 
 - Three profiles: `default`, `correlation` and `legacy-adaptive`. See the

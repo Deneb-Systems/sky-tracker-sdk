@@ -33,9 +33,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--bbox", type=parse_bbox, required=True, help="Initial x,y,w,h")
     parser.add_argument("--profile", choices=PROFILES, default="default")
     parser.add_argument(
-        "--pure",
+        "--ml",
         action="store_true",
-        help="with --profile correlation: the correlation-filter tracker alone, without NanoTrack",
+        help="with --profile correlation: add NanoTrack, a small neural tracker",
+    )
+    parser.add_argument(
+        "--ml-every",
+        type=int,
+        default=1,
+        help="with --ml: run NanoTrack every Nth frame while the two trackers agree (default: 1)",
     )
     parser.add_argument("--start-seconds", type=float, default=0.0)
     parser.add_argument(
@@ -74,7 +80,7 @@ def main() -> int:
             print(f"cannot read video at {args.start_seconds:.3f}s", file=sys.stderr)
             return 2
 
-        tracker = sky_tracker.Tracker(args.profile, pure=args.pure)
+        tracker = sky_tracker.Tracker(args.profile, ml=args.ml, ml_every=args.ml_every)
         tracker.lock(frame, args.bbox)
 
         csv_path = args.csv or args.video.with_name(f"{args.video.stem}_tracks.csv")

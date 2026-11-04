@@ -18,9 +18,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("video", type=Path, help="Input video file")
     parser.add_argument("--profile", choices=PROFILES, default="default")
     parser.add_argument(
-        "--pure",
+        "--ml",
         action="store_true",
-        help="with --profile correlation: the correlation-filter tracker alone, without NanoTrack",
+        help="with --profile correlation: add NanoTrack, a small neural tracker",
+    )
+    parser.add_argument(
+        "--ml-every",
+        type=int,
+        default=1,
+        help="with --ml: run NanoTrack every Nth frame while the two trackers agree (default: 1)",
     )
     parser.add_argument(
         "--start-seconds",
@@ -97,7 +103,7 @@ def main() -> int:
             print("target selection cancelled", file=sys.stderr)
             return 2
 
-        tracker = sky_tracker.Tracker(args.profile, pure=args.pure)
+        tracker = sky_tracker.Tracker(args.profile, ml=args.ml, ml_every=args.ml_every)
         tracker.lock(frame, bbox)
 
         output = args.output or args.video.with_name(f"{args.video.stem}_tracked.mp4")
