@@ -42,14 +42,12 @@ npm install @sky-tracker/node
 
 ## Licence setup
 
-A valid licence is required when a tracker is created. To request a
-machine-locked licence, print the machine ID:
+A valid licence is required when a tracker is created. Buy one at
+[sky-tracker.deneb-systems.com](https://sky-tracker.deneb-systems.com/#pricing):
+the key arrives by email right after payment and works on every device, with no
+machine ID to send.
 
-```bash
-python examples/machine_id.py
-```
-
-Set a licence token in the environment:
+Set the licence key in the environment:
 
 ```powershell
 $env:SKY_TRACKER_LICENSE_KEY = "<your-token>"
@@ -205,6 +203,9 @@ python examples/track_from_bbox.py video.mp4 \
 Source: [`examples/track_from_bbox.py`](examples/track_from_bbox.py)
 
 ### Machine ID
+
+Only for keys issued to a single machine before 1.0; keys bought on the website
+work everywhere.
 
 ```bash
 python examples/machine_id.py
