@@ -4,14 +4,15 @@
 
 - Three profiles: `default`, `correlation` and `legacy-adaptive`. See the
   [1.0.0 release notes](docs/release-1.0.0.md) for how 0.2.x names map.
-- New `correlation`: a correlation-filter tracker (old-tracker) arbitrated with
-  NanoTrack, a 1.8 MB neural tracker; one target. `pure` runs old-tracker alone.
+- New `correlation`: an improved correlation-filter tracker arbitrated with
+  NanoTrack, a 1.8 MB neural tracker; one target. `pure` runs the correlation-filter
+  tracker alone, with no neural network.
 - `default` is the grey template tracker that 0.2.x called `legacy`.
 - `legacy-adaptive` is the tracker that 0.2.x called `adaptive-quality`.
 - 0.2.x `legacy`, `adaptive`, `correlation-quality`, `adaptive-quality`, `fast-sky`,
   `birds`, `close-pass`, `missile`, `scale-target` and `mosse` are refused.
 - CLI: complete `--help`, `--pure`, arbiter tuning, and a motion-aware layer for
-  moving cameras (`--old-tracker-motion`, with `--pure`).
+  moving cameras (with `--pure`; see `--help`).
 - Published [benchmarks](docs/benchmarks.md): accuracy on 224 public dataset clips
   and 18 field clips, and speed per profile.
 

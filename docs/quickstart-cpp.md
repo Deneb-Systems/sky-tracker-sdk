@@ -9,7 +9,7 @@ SDKs are bindings over this same code.
 - CMake 3.16 or later
 - OpenCV 4.x with the `core`, `imgproc` and `video` modules (4.7+ with `dnn`
   as well for the `correlation` profile with NanoTrack)
-- Your evaluation licence key
+- A licence key (see step 2)
 
 ---
 
@@ -32,25 +32,15 @@ tell us which one you use and we will build to match.
 
 ---
 
-## 2. Report your machine ID
+## 2. Get a licence
 
-Licences are bound to the machine they run on. On the target unit:
+Buy a licence at [sky-tracker.deneb-systems.com](https://sky-tracker.deneb-systems.com/#pricing).
+The key arrives by email right after payment, as text and as a `sky_tracker.lic`
+file, and works on every device you run the SDK on: there is no machine ID to
+send. To try the tracker first, use the free demo app from the same page.
 
-```cpp
-#include <sky_tracker/sdk.hpp>
-#include <cstdio>
-
-int main() {
-    std::printf("%s\n", sky_tracker::sdk::machineId().c_str());
-}
-```
-
-`machineId()` needs no licence, so this works before you have one. Send us the
-32-character string and we will issue a licence for that unit.
-
-The ID derives from the OS install identity. It changes if the machine is
-reimaged and differs inside a container from the host — if either applies during
-evaluation, tell us and we will issue an unbound licence instead.
+`sky_tracker::sdk::machineId()` still prints this machine's ID, for keys we
+issued to a single unit before 1.0.
 
 ---
 

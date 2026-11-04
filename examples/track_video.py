@@ -20,7 +20,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--pure",
         action="store_true",
-        help="with --profile correlation: old-tracker alone, without NanoTrack",
+        help="with --profile correlation: the correlation-filter tracker alone, without NanoTrack",
     )
     parser.add_argument(
         "--start-seconds",

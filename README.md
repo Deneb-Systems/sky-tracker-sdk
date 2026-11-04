@@ -126,12 +126,12 @@ tracks to the same observation. The result exposes this state through
 | Profile | What it is | Targets |
 | ------- | ---------- | ------- |
 | `default` | Grey template tracker tuned for constrained CPUs. The recommended starting point. | One or several |
-| `correlation` | A correlation-filter tracker (old-tracker) and NanoTrack, a 1.8 MB neural tracker, run on every frame; an arbiter reports one box. | One (`Tracker` only) |
+| `correlation` | An improved correlation-filter tracker and NanoTrack, a 1.8 MB neural tracker, run on every frame; an arbiter reports one box. | One (`Tracker` only) |
 | `legacy-adaptive` | Template tracker with correlation assist (strict checks, camera-motion compensation) and scheduled foreground box fitting. | One or several |
 
 ```python
-tracker = sky_tracker.Tracker("correlation")             # old-tracker + NanoTrack
-tracker = sky_tracker.Tracker("correlation", pure=True)  # old-tracker alone
+tracker = sky_tracker.Tracker("correlation")             # correlation filter + NanoTrack
+tracker = sky_tracker.Tracker("correlation", pure=True)  # correlation filter alone
 ```
 
 The Linux (x86_64 and aarch64) and macOS wheels and the Jetson C++ package
@@ -162,8 +162,8 @@ MP4 with a zoom inset:
 
 ```bash
 python examples/track_video.py video.mp4 --start-seconds 10 --profile default
-python examples/track_video.py video.mp4 --profile correlation          # old-tracker + NanoTrack
-python examples/track_video.py video.mp4 --profile correlation --pure   # old-tracker alone
+python examples/track_video.py video.mp4 --profile correlation          # correlation filter + NanoTrack
+python examples/track_video.py video.mp4 --profile correlation --pure   # correlation filter alone
 ```
 
 Source: [`examples/track_video.py`](examples/track_video.py)
