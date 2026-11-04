@@ -20,10 +20,10 @@ detector, telemetry, or an interactive ROI to provide the initial
 
 The free demo app opens any video and tracks ten seconds with Correlation,
 Correlation + ML or Default:
-[macOS](https://github.com/rongeld/sky-tracker-sdk/releases/latest/download/Sky-Tracker-Demo-macOS.dmg),
-[Windows](https://github.com/rongeld/sky-tracker-sdk/releases/latest/download/Sky-Tracker-Demo-Windows-x64.zip),
-[Linux x86_64](https://github.com/rongeld/sky-tracker-sdk/releases/latest/download/Sky-Tracker-Demo-Linux-x86_64.AppImage),
-[Linux ARM64](https://github.com/rongeld/sky-tracker-sdk/releases/latest/download/Sky-Tracker-Demo-Linux-arm64.AppImage).
+[macOS](https://github.com/Deneb-Systems/sky-tracker-sdk/releases/latest/download/Sky-Tracker-Demo-macOS.dmg),
+[Windows](https://github.com/Deneb-Systems/sky-tracker-sdk/releases/latest/download/Sky-Tracker-Demo-Windows-x64.zip),
+[Linux x86_64](https://github.com/Deneb-Systems/sky-tracker-sdk/releases/latest/download/Sky-Tracker-Demo-Linux-x86_64.AppImage),
+[Linux ARM64](https://github.com/Deneb-Systems/sky-tracker-sdk/releases/latest/download/Sky-Tracker-Demo-Linux-arm64.AppImage).
 It is not code-signed yet, so macOS and Windows ask before the first run.
 
 ## Install
