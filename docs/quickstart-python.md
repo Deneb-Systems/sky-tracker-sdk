@@ -306,3 +306,4 @@ Share your CSV and any annotated frames with us. The `reason` field in each row 
 - On Windows, call `os.add_dll_directory(MODULE_DIR)` before `import sky_tracker` so the loader finds OpenCV DLLs next to the module.
 - `annotate()` returns a full-resolution copy of the frame — avoid calling it on every frame in throughput-critical paths.
 - The licence key is checked when `Tracker()` is constructed. If the key expires mid-session the current tracker instance keeps running; the next `Tracker()` construction will fail.
+- A 7-day trial key (`SKT2.…`) is also confirmed with the licence server over HTTPS when `Tracker()` is first constructed in a process, so a trial needs an internet connection and 1.1.1 or later. Bought and student keys never contact the network.

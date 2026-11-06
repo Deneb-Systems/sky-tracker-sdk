@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.1 - 2026-11-06
+
+- Free 7-day trial keys for the full SDK, from
+  [sky-tracker.deneb-systems.com/trial](https://sky-tracker.deneb-systems.com/trial/).
+  A trial key (`SKT2.`) is confirmed with the licence server over HTTPS when a
+  tracker starts, so it needs an internet connection; earlier versions refuse
+  it. Bought and student keys stay fully offline. See the
+  [1.1.1 release notes](docs/release-1.1.1.md).
+- CLI: meteor tracking on a static camera with `--mode bright-diff`,
+  `--moving-only`, `--box-padding` and `--target-end-when-still`.
+
 ## v1.1.0 - 2026-11-04
 
 - `correlation` is now the improved correlation-filter tracker alone (1.0.0's

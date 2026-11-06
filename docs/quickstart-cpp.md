@@ -12,7 +12,7 @@ You do not need OpenCV: the library carries its own.
 
 ---
 
-The SDK version is 1.1.0. Every profile tracks exactly as it does in the CLI and the Python SDK.
+The SDK version is 1.1.1. Every profile tracks exactly as it does in the CLI and the Python SDK.
 
 ## 1. Download the package
 
@@ -49,7 +49,8 @@ Buy a licence at [sky-tracker.deneb-systems.com](https://sky-tracker.deneb-syste
 The key arrives by email right after payment, as text and as a `sky_tracker.lic`
 file, and works on every device you run the SDK on: there is no machine ID to
 send. Students get a [free one-year licence](https://sky-tracker.deneb-systems.com/student/).
-To try the tracker first, use the free demo app from the website.
+To try the tracker first, use the free demo app from the website, or get a
+[free 7-day trial key](https://sky-tracker.deneb-systems.com/trial/) for the full SDK.
 
 `sky_tracker::sdk::machineId()` still prints this machine's ID, for keys we
 issued to a single unit before 1.0.
@@ -66,8 +67,11 @@ export SKY_TRACKER_LICENSE_FILE=/path/to/sky_tracker.lic
 ```
 
 …or place `sky_tracker.lic` next to your executable, in the working directory,
-or at `~/.sky_tracker/licence`. Validation is fully offline — nothing contacts a
-network at runtime.
+or at `~/.sky_tracker/licence`. Validation of bought and student licences is fully
+offline — nothing contacts a network at runtime. A 7-day trial key (it starts
+with `SKT2.`) is the exception: when a tracker starts, the SDK confirms it with
+the licence server over HTTPS, so a trial needs an internet connection, and
+1.1.1 or later.
 
 Call `validateLicense()` at startup to fail fast with a clear message:
 

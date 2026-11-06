@@ -4,7 +4,8 @@ Sky Tracker is a CPU-friendly SDK for following small, fast-moving targets in
 video. The caller selects each target with an initial bounding box; Sky Tracker
 then maintains its position, identity, motion state, and visible box over time.
 
-Current version: 1.1.0. Coming from 1.0.0, read the
+Current version: 1.1.1, which adds free 7-day trial keys
+([release notes](docs/release-1.1.1.md)). Coming from 1.0.0, read the
 [1.1.0 release notes](docs/release-1.1.0.md): `pure` is gone and NanoTrack moved
 behind `ml`. Coming from 0.2.x, read the [1.0.0 release notes](docs/release-1.0.0.md)
 too: profile names changed.
@@ -55,7 +56,11 @@ see the [C++ quickstart](docs/quickstart-cpp.md).
 A valid licence is required when a tracker is created. Buy one at
 [sky-tracker.deneb-systems.com](https://sky-tracker.deneb-systems.com/#pricing):
 the key arrives by email right after payment and works on every device, with no
-machine ID to send.
+machine ID to send. To evaluate first, get a
+[free 7-day trial key](https://sky-tracker.deneb-systems.com/trial/): it needs
+1.1.1 or later and an internet connection, because the SDK confirms a trial key
+with the licence server when a tracker starts. Bought and student keys are
+checked fully offline.
 
 Set the licence key in the environment:
 
@@ -243,11 +248,11 @@ Every example supports `--help`.
 
 | Platform               | Status                                          |
 | ---------------------- | ----------------------------------------------- |
-| macOS (Apple silicon)  | 1.1.0 built, tested and benchmarked             |
-| Windows x64            | Verified for 0.2.2; 1.1.0 C++ package built and tested on CI (Visual Studio 2022) |
-| Linux x86_64           | Verified for 0.2.2; 1.1.0 C++ package built and tested in Docker (Ubuntu 20.04) |
-| Raspberry Pi 4 (ARM64) | Verified for 0.2.2; 1.1.0 ARM64 wheel and C++ package built and tested in Docker, not yet on a Pi |
-| Jetson (JetPack 4.6)   | 1.1.0 ARM64 C++ package built and tested in Docker (Ubuntu 18.04), not yet on a Jetson |
+| macOS (Apple silicon)  | 1.1.1 built and tested; 1.1.0 benchmarked       |
+| Windows x64            | Verified for 0.2.2; 1.1.1 C++ package built and tested on CI (Visual Studio 2022) |
+| Linux x86_64           | Verified for 0.2.2; 1.1.1 C++ package built and tested in Docker (Ubuntu 20.04) |
+| Raspberry Pi 4 (ARM64) | Verified for 0.2.2; 1.1.1 ARM64 wheel and C++ package built and tested in Docker, not yet on a Pi |
+| Jetson (JetPack 4.6)   | 1.1.1 ARM64 C++ package built and tested in Docker (Ubuntu 18.04), not yet on a Jetson |
 
 ## Documentation
 
@@ -255,6 +260,7 @@ Every example supports `--help`.
 - [Node.js quickstart](docs/quickstart-node.md)
 - [C++ quickstart](docs/quickstart-cpp.md)
 - [Benchmarks](docs/benchmarks.md)
+- [1.1.1 release notes](docs/release-1.1.1.md)
 - [1.1.0 release notes](docs/release-1.1.0.md)
 - [1.0.0 release notes](docs/release-1.0.0.md)
 - [0.2.2 release notes](docs/release-0.2.2.md)
