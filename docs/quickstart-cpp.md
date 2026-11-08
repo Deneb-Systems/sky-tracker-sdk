@@ -238,11 +238,35 @@ that claimed the observation instead of jumping onto a neighbouring object.
 
 ---
 
+## 8. Moving objects without a bbox
+
+`st::MotionTracker` finds whatever moves and follows each object with a stable
+ID, with no bbox to start from. Use it with a static camera; see the Python
+quickstart for what each mode does. `MotionMode::BrightDiff` needs no licence
+key; the other modes do.
+
+```cpp
+st::MotionOptions options;
+options.mode = st::MotionMode::BrightDiff;   // or Background, FrameDiff
+options.movingOnly = true;                   // ignore twinkling stars and noise
+st::MotionTracker motion(options);
+
+for (const st::MotionTrack& t : motion.update(frame, 1.0 / fps)) {
+    if (t.state == st::TrackState::Confirmed)
+        std::printf("%d at %.0f,%.0f, %.0f px/s\n", t.id, t.centerX, t.centerY, t.speedPixelsPerSecond);
+}
+```
+
+`MotionOptions::region` restricts detection to part of the frame, and
+`boxPadding` grows each box. `reset()` starts again after a scene cut.
+
 ## Scope
 
-Sky Tracker is a **selected-target** tracker. Every target starts from a
-bounding box you supply, from an operator selection or your own detector. It
-does not perform automatic search and acquisition.
+`Tracker` and `MultiTracker` follow **selected** targets: every target starts
+from a bounding box you supply, from an operator selection or your own
+detector. `MotionTracker` finds moving objects by itself, but only by their
+motion against a still background: it does not recognise what they are, and it
+needs a static or slowly moving camera.
 
 ---
 

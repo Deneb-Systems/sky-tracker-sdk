@@ -251,10 +251,10 @@ Every example supports `--help`.
 
 | Platform               | Status                                          |
 | ---------------------- | ----------------------------------------------- |
-| macOS (Apple silicon)  | 1.2.0 wheels built and tested; 1.1.1 C++ package built and tested; 1.1.0 benchmarked |
-| Windows x64            | Verified for 0.2.2; 1.2.0 wheels and 1.1.1 C++ package built and tested on CI (Visual Studio 2022) |
-| Linux x86_64           | Verified for 0.2.2; 1.2.0 wheels (manylinux_2_28) and 1.1.1 C++ package built and tested in Docker |
-| Raspberry Pi 4 (ARM64) | Verified for 0.2.2; 1.2.0 ARM64 wheels and 1.1.1 C++ package built and tested in Docker, not yet on a Pi |
+| macOS (Apple silicon)  | 1.2.0 wheels built and tested; 1.2.0 C++ package built and tested; 1.1.0 benchmarked |
+| Windows x64            | Verified for 0.2.2; 1.2.0 wheels and 1.2.0 C++ package built and tested on Azure Pipelines (Visual Studio 2022) |
+| Linux x86_64           | Verified for 0.2.2; 1.2.0 wheels (manylinux_2_28) and 1.2.0 C++ package built and tested in Docker |
+| Raspberry Pi 4 (ARM64) | Verified for 0.2.2; 1.2.0 ARM64 wheels and 1.2.0 C++ package built and tested in Docker, not yet on a Pi |
 | Jetson (JetPack 4.6)   | 1.1.1 ARM64 C++ package built and tested in Docker (Ubuntu 18.04), not yet on a Jetson |
 
 ## Documentation
