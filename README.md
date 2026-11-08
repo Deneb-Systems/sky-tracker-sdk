@@ -4,8 +4,10 @@ Sky Tracker is a CPU-friendly SDK for following small, fast-moving targets in
 video. The caller selects each target with an initial bounding box; Sky Tracker
 then maintains its position, identity, motion state, and visible box over time.
 
-Current version: 1.1.1, which adds free 7-day trial keys
-([release notes](docs/release-1.1.1.md)). Coming from 1.0.0, read the
+Current version: 1.2.0, which adds `MotionTracker`, for moving objects with no
+bbox to start from (its `bright-diff` mode needs no licence key), a faster
+`correlation` profile and Python 3.14 wheels
+([release notes](docs/release-1.2.0.md)). Coming from 1.0.0, read the
 [1.1.0 release notes](docs/release-1.1.0.md): `pure` is gone and NanoTrack moved
 behind `ml`. Coming from 0.2.x, read the [1.0.0 release notes](docs/release-1.0.0.md)
 too: profile names changed.
@@ -15,7 +17,8 @@ Website, licences and the free demo app:
 
 It is a selected-target tracker, not a general object detector. Use your own
 detector, telemetry, or an interactive ROI to provide the initial
-`(x, y, width, height)` box.
+`(x, y, width, height)` box. The one exception is `MotionTracker` (Python, since
+1.2.0), which finds moving objects by their motion against a still background.
 
 ## Try it without writing code
 
@@ -248,10 +251,10 @@ Every example supports `--help`.
 
 | Platform               | Status                                          |
 | ---------------------- | ----------------------------------------------- |
-| macOS (Apple silicon)  | 1.1.1 built and tested; 1.1.0 benchmarked       |
-| Windows x64            | Verified for 0.2.2; 1.1.1 C++ package built and tested on CI (Visual Studio 2022) |
-| Linux x86_64           | Verified for 0.2.2; 1.1.1 C++ package built and tested in Docker (Ubuntu 20.04) |
-| Raspberry Pi 4 (ARM64) | Verified for 0.2.2; 1.1.1 ARM64 wheel and C++ package built and tested in Docker, not yet on a Pi |
+| macOS (Apple silicon)  | 1.2.0 wheels built and tested; 1.1.1 C++ package built and tested; 1.1.0 benchmarked |
+| Windows x64            | Verified for 0.2.2; 1.2.0 wheels and 1.1.1 C++ package built and tested on CI (Visual Studio 2022) |
+| Linux x86_64           | Verified for 0.2.2; 1.2.0 wheels (manylinux_2_28) and 1.1.1 C++ package built and tested in Docker |
+| Raspberry Pi 4 (ARM64) | Verified for 0.2.2; 1.2.0 ARM64 wheels and 1.1.1 C++ package built and tested in Docker, not yet on a Pi |
 | Jetson (JetPack 4.6)   | 1.1.1 ARM64 C++ package built and tested in Docker (Ubuntu 18.04), not yet on a Jetson |
 
 ## Documentation
@@ -260,6 +263,7 @@ Every example supports `--help`.
 - [Node.js quickstart](docs/quickstart-node.md)
 - [C++ quickstart](docs/quickstart-cpp.md)
 - [Benchmarks](docs/benchmarks.md)
+- [1.2.0 release notes](docs/release-1.2.0.md)
 - [1.1.1 release notes](docs/release-1.1.1.md)
 - [1.1.0 release notes](docs/release-1.1.0.md)
 - [1.0.0 release notes](docs/release-1.0.0.md)

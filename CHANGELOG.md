@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.2.0 - 2026-11-08
+
+- `MotionTracker` (Python `sky_tracker.MotionTracker`) finds and follows moving
+  objects with no bbox to start from, each with a stable ID: drones and birds
+  against the sky, or meteors. Modes `background`, `diff` and `bright-diff`,
+  plus `moving_only`, `region` and `box_padding`. See the
+  [Python quickstart](docs/quickstart-python.md) and the
+  [1.2.0 release notes](docs/release-1.2.0.md).
+- `bright-diff` mode is free: it needs no licence key, for any use. Everything
+  else still needs one.
+- `correlation`: the update takes a third to three quarters less time and holds
+  hundreds of megabytes less memory at 1080p. The tracker re-locks a target
+  that left its window, never accepts a weak peak (PSR below 6), and fits its
+  box tighter. CLI `--correlation-reacquire N` (off by default) finds the
+  target again after it left the frame.
+- Python 3.14 wheels.
+
 ## v1.1.1 - 2026-11-06
 
 - Free 7-day trial keys for the full SDK, from

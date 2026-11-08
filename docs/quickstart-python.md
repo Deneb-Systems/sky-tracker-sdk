@@ -162,7 +162,42 @@ python cpp_tracker\examples\track_multi_video.py `
 
 ---
 
-## 5. API reference
+## 5. Finding moving objects: MotionTracker
+
+`sky_tracker.MotionTracker` needs no bbox. It finds whatever moves in each
+frame and follows each object with its own stable `id`: drones and birds against
+the sky, or meteors. Use it with a static or slowly moving camera.
+
+```python
+tracker = sky_tracker.MotionTracker(mode="bright-diff", moving_only=True)
+
+while True:
+    ok, frame = cap.read()
+    if not ok:
+        break
+    for track in tracker.update(frame, dt=1 / fps):
+        if track.state == "confirmed":
+            print(track.id, track.center(), f"{track.speed:.0f} px/s")
+```
+
+Modes:
+
+- `"background"` (the default): background subtraction. It tolerates slow
+  changes in light; the first frames are spent learning the background.
+- `"diff"`: frame differencing. Faster; static camera only.
+- `"bright-diff"`: what got brighter since the last frame. It boxes a meteor's
+  head rather than its trail. Static camera only. **Free: it needs no licence
+  key**, so meteor and sky-event tools can use it without one.
+
+`moving_only=True` reports an object once it has moved 3 px, and drops it after
+1 frame without a detection. That removes twinkling stars and sensor noise.
+`region=(x, y, w, h)` looks only at part of the frame, for example the sky
+above the horizon; results stay in frame coordinates. Call `reset()` after a
+scene cut.
+
+---
+
+## 6. API reference
 
 ### `sky_tracker.Tracker(profile, *, ml=False, ml_every=1)`
 
@@ -209,6 +244,27 @@ Native selected-target multi-tracker. Use `lock(frame, bboxes)` with
 `bboxes=[(x, y, width, height), ...]`, then call `update(frame, dt)` once per
 frame. It returns a list of `TrackResult` objects.
 
+### `sky_tracker.MotionTracker(*, mode="background", min_area=3, max_area=5000, diff_threshold=25, hit_threshold=3, coast_frames=10, association_distance=60, moving_only=False, box_padding=0, region=None)`
+
+Finds and follows everything that moves (section 5). `min_area` and
+`max_area` bound a detection's area in pixels, and `diff_threshold` (1-254) is
+the per-pixel change for `diff` and `bright-diff`. An object becomes
+`confirmed` after `hit_threshold` frames, and ends after `coast_frames` frames
+without a detection. `association_distance` is how far, in pixels, an object
+may be from its predicted position and still keep its id. `box_padding` grows
+every box by that many pixels on each side.
+
+`update(frame, dt=-1.0)` takes a grey or BGR frame, the same size every time,
+and returns a list of `MotionTrack` in id order, tentative ones included.
+`reset()` forgets the background and every object; new ids continue above the
+old ones. Invalid options raise `ValueError`.
+
+`MotionTrack` fields: `id`, `state` (`tentative`, `confirmed` or `lost`), `cx`,
+`cy`, `bbox_x`, `bbox_y`, `bbox_w`, `bbox_h`, `vx` and `vy` (pixels/second),
+`speed` (pixels/second), `age` (frames since found), `hits` (frames detected),
+`misses` (consecutive frames without a detection) and `prediction_only`.
+Methods `bbox()` and `center()` return tuples.
+
 ### `TrackResult` fields
 
 | Field | Type | Description |
@@ -241,7 +297,7 @@ short-gap display/prediction signal, not as a confirmed image observation.
 
 ---
 
-## 6. Writing a CSV from Python
+## 7. Writing a CSV from Python
 
 ```python
 import csv
@@ -259,7 +315,7 @@ with open("results.csv", "w", newline="") as f:
 
 ---
 
-## 7. Live camera input
+## 8. Live camera input
 
 For USB/V4L2 cameras, pass an integer camera id to OpenCV and keep the tracker API unchanged:
 
@@ -294,7 +350,7 @@ On Raspberry Pi OS 64-bit, install the Linux ARM64 wheel and use the same frame-
 
 ---
 
-## 8. Sending evaluation results back
+## 9. Sending evaluation results back
 
 Share your CSV and any annotated frames with us. The `reason` field in each row is especially useful for diagnosing tracking failures.
 
